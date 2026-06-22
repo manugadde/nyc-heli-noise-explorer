@@ -1,0 +1,431 @@
+body {
+  --calcite-color-brand: #009978;
+  --calcite-color-bg: #edf8f2;
+  --calcite-color-background: #edf8f2;
+  --calcite-color-foreground-1: #f6fcf8;
+  --calcite-color-foreground-2: #e6f4ec;
+  --calcite-color-foreground-3: #d7eadf;
+  --calcite-color-text-1: #093c32;
+  --calcite-color-text-2: #245f51;
+  --calcite-color-text-3: #4e7d70;
+  --app-title-surface: rgba(245, 238, 229, 0.95);
+  --app-title-surface-soft: rgba(245, 238, 229, 0.8);
+  --app-shell-background: rgb(0, 121, 94);
+  --app-cream-text: #f3f9f6;
+  --app-chart-height: 200px;
+  --app-z-title: 1;
+  --app-z-controls: 2;
+  --app-z-sidebar: 3;
+  --app-z-sheet: 4;
+}
+
+:where(
+  calcite-action,
+  calcite-block,
+  calcite-button,
+  calcite-chip,
+  calcite-chip-group,
+  calcite-dialog,
+  calcite-flow,
+  calcite-flow-item,
+  calcite-list,
+  calcite-list-item,
+  calcite-panel,
+  calcite-scrim,
+  calcite-sheet,
+  calcite-shell
+
+):not([calcite-hydrated]) {
+  visibility: hidden;
+}
+
+calcite-scrim {
+  --calcite-scrim-background: var(--calcite-color-foreground-1);
+  transition: opacity 400ms ease-out;
+}
+
+calcite-scrim.is-hiding {
+  opacity: 0;
+  pointer-events: none;
+}
+
+calcite-block {
+  --calcite-block-content-space: 0;
+  margin: 0;
+}
+
+calcite-dialog {
+  --calcite-dialog-content-space: 0;
+}
+
+arcgis-chart {
+  height: var(--app-chart-height);
+}
+
+.is-overlapping {
+  background: var(--app-title-surface-soft);
+  transition: background 200ms ease-in-out;
+}
+
+#map-title-banner {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: var(--app-z-title);
+  left: var(--calcite-size-xs);
+  top: var(--calcite-size-xs);
+  width: min(620px, 80vw);
+  font-family: Georgia, "Times New Roman", serif;
+  text-transform: uppercase;
+  pointer-events: none;
+  text-shadow: 3px 3px 0 #efebe6;
+}
+
+#map-title-banner.is-sticky {
+  max-width: 70vw;
+}
+
+#map-title-banner :is(span, h1, p) {
+  background: transparent;
+  padding: var(--calcite-space-xxs) var(--calcite-space-xs);
+}
+
+#map-title-banner:is(.is-sticky, .title-is-overlapping) :is(span, h1, p) {
+  background: var(--app-title-surface);
+}
+
+#map-title-banner span {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 0 #efebe6;
+}
+
+#map-title-banner h1 {
+  margin: 0;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 900;
+}
+
+#map-title-banner p {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-shadow: 2px 2px 0 #efebe6;
+}
+
+#map-controls-bar {
+  position: fixed;
+  z-index: var(--app-z-controls);
+  left: 0;
+  top: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--calcite-space-sm);
+  background: var(--app-shell-background);
+  pointer-events: none;
+}
+
+#map-controls-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--calcite-space-sm);
+}
+
+#map-controls-bar.is-bottom-docked #map-controls-stack {
+  flex-direction: column-reverse;
+}
+
+#map-layer-toggles {
+  display: flex;
+  align-items: center;
+  gap: var(--calcite-space-sm);
+  width: 100%;
+  pointer-events: auto;
+}
+
+#map-layer-toggles calcite-chip {
+  pointer-events: auto;
+  --calcite-chip-background-color: rgba(243, 249, 246, 0.15);
+  --calcite-chip-border-color: rgba(243, 249, 246, 0.25);
+  --calcite-chip-text-color: var(--app-cream-text);
+  --calcite-chip-close-icon-color: rgba(243, 249, 246, 0.7);
+  --calcite-chip-close-icon-color-hover: var(--app-cream-text);
+  --calcite-chip-close-icon-color-press: #cce9df;
+  --calcite-chip-corner-radius: var(--calcite-corner-radius-pill);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+#map-layer-toggles calcite-chip[selected] {
+  --calcite-chip-background-color: rgba(243, 249, 246, 0.9);
+  --calcite-chip-border-color: rgb(243, 249, 246);
+  --calcite-chip-text-color: #005643;
+  --calcite-chip-close-icon-color: rgba(0, 86, 67, 0.72);
+  --calcite-chip-close-icon-color-hover: #003d31;
+  --calcite-chip-close-icon-color-press: #002b22;
+}
+
+#open-filters-dialog {
+  position: fixed;
+  z-index: var(--app-z-controls);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+#open-filters-dialog.is-sticky {
+  --calcite-button-background-color: red;
+}
+#sidebar-overlay {
+  position: fixed;
+  left: var(--calcite-size-xxs);
+  top: var(--calcite-size-xxs);
+  z-index: var(--app-z-sidebar);
+  display: block;
+  width: 20rem;
+  block-size: fit-content;
+  min-block-size: 0;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 2rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  --calcite-panel-background-color: transparent;
+  --calcite-panel-border-color: transparent;
+  --calcite-panel-corner-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  pointer-events: auto;
+  transition: background 180ms ease-in-out;
+}
+
+#sidebar-overlay > div {
+  max-block-size: calc(100vh - 2rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#day-selection-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--calcite-space-xxs);
+  margin-inline-start: auto;
+  pointer-events: auto;
+}
+
+#day-selection-nav calcite-action {
+  border-radius: var(--calcite-corner-radius-pill);
+}
+
+#flight-id-list {
+  min-height: 160px;
+  max-height: 200px;
+  overflow: auto;
+}
+
+#aircraft-type-chip {
+  align-self: center;
+}
+
+#filters-dialog {
+  --calcite-dialog-max-size-x: 20rem;
+  --calcite-dialog-content-space: 0;
+  --calcite-dialog-scrim-background: transparent;
+}
+
+#filters-dialog-content {
+  max-block-size: calc(100vh - 7rem);
+  overflow: auto;
+}
+
+#loupe-stats-block {
+  width: 100%;
+  pointer-events: none;
+}
+
+#loupe-stats-block calcite-tile-group {
+  width: 100%;
+}
+
+#loupe-stats-block calcite-tile {
+  --calcite-color-text-2: rgba(243, 249, 246, 0.8);
+  --calcite-tile-description-text-color: rgba(243, 249, 246, 0.8);
+  --calcite-font-size--2: var(--calcite-font-size-0);
+  --calcite-tile-background-color: var(--app-shell-background);
+  --calcite-tile-border-color: var(--app-shell-background);
+  pointer-events: none;
+  --calcite-font-weight-normal: 600;
+}
+
+#loupe-stats-block calcite-tile:first-child {
+  --calcite-tile-background-color: rgb(7, 135, 108);
+  --calcite-tile-border-color: rgb(7, 135, 108);
+}
+
+#loupe-stats-block calcite-tile:last-child {
+  --calcite-tile-background-color: rgb(0, 107, 86);
+  --calcite-tile-border-color: rgb(0, 107, 86);
+}
+
+#loupe-stats-block strong {
+  display: block;
+  color: var(--app-cream-text);
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+#aircraft-flow calcite-flow-item {
+  --calcite-flow-item-background-color: transparent;
+}
+
+#complaints-count {
+  color: var(--calcite-color-text-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+#complaints-dialog {
+  --calcite-dialog-size-inline: min(1120px, calc(100vw - 2rem));
+  --calcite-dialog-content-padding: 0;
+}
+
+#complaints-dialog arcgis-feature-table {
+  display: block;
+  min-height: 24rem;
+  height: min(70vh, 46rem);
+}
+
+#overview-sheet calcite-panel {
+  box-sizing: border-box;
+  padding-inline: var(--calcite-space-sm);
+}
+
+.custom-heat-empty {
+  margin: 0;
+  padding: var(--calcite-space-sm);
+  color: var(--calcite-color-text-2);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.calendar-grid {
+  width: 100%;
+  table-layout: fixed;
+  --calcite-table-cell-padding-block: 0.35rem;
+  --calcite-table-cell-padding-inline: 0.35rem;
+  --calcite-table-background-color: transparent;
+  --calcite-table-border-color: transparent;
+  --calcite-table-row-background-color: transparent;
+}
+
+.calendar-row calcite-table-cell {
+  width: calc(100% / 7);
+}
+
+.calendar-cell {
+  vertical-align: top;
+  cursor: pointer;
+}
+
+.calendar-spacer-cell {
+  --calcite-table-cell-background-color: transparent;
+  pointer-events: none;
+}
+
+.calendar-cell[disabled] {
+  cursor: default;
+}
+
+.calendar-cell[disabled] .cell-month {
+  color: rgba(15, 31, 27, 0.35);
+}
+
+.calendar-cell[disabled] .cell-day {
+  color: rgba(15, 31, 27, 0.5);
+}
+
+.cell-date {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.cell-month {
+  min-height: 0.75rem;
+  color: rgba(15, 31, 27, 0.55);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cell-day {
+  color: #10211c;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.calendar-cell.density-0 {
+  --calcite-table-cell-background-color: #f3f6f5;
+}
+
+.calendar-cell.density-1 {
+  --calcite-table-cell-background-color: #dff3ec;
+}
+
+.calendar-cell.density-2 {
+  --calcite-table-cell-background-color: #bfe7d9;
+}
+
+.calendar-cell.density-3 {
+  --calcite-table-cell-background-color: #90d8c1;
+}
+
+.calendar-cell.density-4 {
+  --calcite-table-cell-background-color: #58c3a5;
+}
+
+.calendar-cell.density-5 {
+  --calcite-table-cell-background-color: #1a9d7f;
+}
+
+.calendar-cell:is(.density-4, .density-5) .cell-month {
+  color: rgba(244, 251, 248, 0.8);
+}
+
+.calendar-cell:is(.density-4, .density-5) .cell-day {
+  color: #f7fffc;
+}
+
+.calendar-cell.is-selected {
+  box-shadow: var(--calcite-shadow-sm);
+  overflow: visible;
+}
+
+.calendar-grid:has(.calendar-cell.is-selected)
+  .calendar-cell:not(.is-selected) {
+  filter: saturate(0.95) brightness(0.98);
+  opacity: 0.3;
+  transition: filter 200ms ease-in-out;
+}
+
+.calendar-grid:has(.calendar-cell.is-selected)
+  .calendar-cell[disabled]:not(.is-selected) {
+  opacity: 0.15;
+}
+
+.calendar-grid:has(.calendar-cell.is-selected)
+  .calendar-cell:not(.is-selected)
+  .cell-date {
+  color: rgba(15, 31, 27, 0.4);
+  opacity: 0.5;
+  transition:
+    opacity 200ms ease-in-out,
+    color 200ms ease-in-out;
+}

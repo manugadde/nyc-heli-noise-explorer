@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="NYC Helicopter Noise Explorer: interactive helicopter flight analytics, charts, map effects, and demographic context for NYC noise complaints."
+    />
+    <title>NYC Helicopter Noise Analytics</title>
+    <script type="module" src="https://js.arcgis.com/5.1/"></script>
+    <script type="module" src="./src/js/app.js" defer></script>
+    <link rel="stylesheet" href="./src/style.css" />
+  </head>
+
+  <body>
+    <calcite-scrim id="app-loading-scrim" loading aria-live="polite">
+    </calcite-scrim>
+    <calcite-shell content-behind>
+      <arcgis-map popup-disabled>
+        <div id="map-title-banner">
+          <span>New York City Metro Area</span>
+          <h1>Noisy Skies</h1>
+          <p>One month of helicopter flights and noise complaints</p>
+        </div>
+        <div id="map-controls-bar">
+          <div id="map-controls-stack">
+            <calcite-chip-group id="map-layer-toggles">
+              <calcite-chip
+                id="open-overview-sheet"
+                icon="information"
+                label="Open app overview"
+                text="Open app overview"
+                aria-label="Open app overview"
+              ></calcite-chip>
+              <calcite-chip id="toggle-noise-complaints" selected
+                >Complaints</calcite-chip
+              >
+              <calcite-chip id="toggle-flights" selected>Flights</calcite-chip>
+              <calcite-chip id="toggle-loupe">Demographics</calcite-chip>
+              <calcite-chip
+                id="selected-date-filter"
+                closable
+                hidden
+              ></calcite-chip>
+              <calcite-chip
+                id="selected-flight-filter"
+                closable
+                hidden
+              ></calcite-chip>
+            </calcite-chip-group>
+            <div id="loupe-stats-block" hidden>
+              <calcite-tile-group layout="horizontal">
+                <calcite-tile description="Population">
+                  <strong slot="content-bottom" id="loupe-population">—</strong>
+                </calcite-tile>
+                <calcite-tile description="Avg Income">
+                  <strong slot="content-bottom" id="loupe-income">—</strong>
+                </calcite-tile>
+                <calcite-tile description="Complaints">
+                  <strong slot="content-bottom" id="loupe-noise-count"
+                    >—</strong
+                  >
+                </calcite-tile>
+              </calcite-tile-group>
+            </div>
+          </div>
+        </div>
+        <calcite-button
+          id="open-filters-dialog"
+          icon-start="hamburger"
+          kind="neutral"
+          scale="l"
+          hidden
+          >Filters</calcite-button
+        >
+        <calcite-panel id="sidebar-overlay">
+          <calcite-block
+            id="time-browser-block"
+            heading="Filter by Day"
+            description="Select a day to view flights and complaints"
+            collapsible
+            expanded
+          >
+            <calcite-action
+              id="day-selection-back"
+              slot="action-start"
+              icon="arrow-left"
+              text="Back to all days"
+              hidden
+            ></calcite-action>
+            <div id="day-selection-nav" slot="actions-end" hidden>
+              <calcite-action
+                id="day-selection-prev"
+                icon="chevron-left"
+                text="Previous day"
+                hidden
+              ></calcite-action>
+              <calcite-action
+                id="day-selection-next"
+                icon="chevron-right"
+                text="Next day"
+                hidden
+              ></calcite-action>
+              <calcite-action
+                id="day-selection-reset"
+                icon="reset"
+                text="Reset day filter"
+                hidden
+              ></calcite-action>
+            </div>
+            <calcite-action
+              id="day-filter-info"
+              slot="actions-end"
+              icon="information"
+              text="About flight counts"
+            ></calcite-action>
+            <calcite-tooltip
+              placement="bottom"
+              reference-element="day-filter-info"
+              >Flight counts are based on available flight data and may include
+              more than one record for a single trip.</calcite-tooltip
+            >
+            <div id="custom-heat-chart"></div>
+          </calcite-block>
+
+          <calcite-block
+            id="aircraft-block"
+            heading="Flight #"
+            collapsible
+            collapsed
+            hidden
+          >
+            <calcite-flow id="aircraft-flow">
+              <calcite-flow-item id="aircraft-flow-list-item" selected>
+                <calcite-list id="flight-id-list"></calcite-list>
+              </calcite-flow-item>
+              <calcite-flow-item id="aircraft-flow-chart-item" collapsible>
+                <calcite-chip
+                  id="aircraft-type-chip"
+                  slot="header-actions-end"
+                  scale="s"
+                  hidden
+                ></calcite-chip>
+                <arcgis-chart
+                  id="heli-rides-chart"
+                  sync-selections-between-chart-and-layer-view-policy="enabled"
+                  sync-selection
+                  use-animated-charts
+                >
+                </arcgis-chart>
+              </calcite-flow-item>
+            </calcite-flow>
+          </calcite-block>
+
+          <calcite-block
+            id="complaints-block"
+            heading="Noise complaints"
+            hidden
+          >
+            <div slot="content-end" id="complaints-count">0 complaints</div>
+            <calcite-tooltip
+              placement="bottom"
+              slot="content-end"
+              reference-element="complaints-tooltip"
+              >Total noise complaints on the chosen day, for the chosen flight
+              number, within the current view</calcite-tooltip
+            >
+            <calcite-tooltip
+              placement="bottom"
+              slot="content-end"
+              reference-element="open-complaints-dialog"
+              >View complaints table</calcite-tooltip
+            >
+            <calcite-action
+              id="complaints-tooltip"
+              slot="actions-end"
+              icon="information"
+            ></calcite-action>
+            <calcite-action
+              slot="actions-end"
+              id="open-complaints-dialog"
+              icon="table"
+              text="Open complaints table"
+            ></calcite-action>
+          </calcite-block>
+        </calcite-panel>
+      </arcgis-map>
+    </calcite-shell>
+    <calcite-dialog
+      id="filters-dialog"
+      heading="Filters"
+      closable
+      placement="top-end"
+      fullscreen-disabled
+      hidden
+    >
+      <div id="filters-dialog-content"></div>
+    </calcite-dialog>
+    <calcite-dialog
+      slot="dialogs"
+      id="complaints-dialog"
+      heading="Complaints Table"
+      fullscreen-disabled
+      modal
+    >
+      <arcgis-feature-table
+        id="noise-feature-table"
+        column-reordering-disabled
+        highlight-disabled
+        sync-view-selection
+        hide-column-descriptions
+        hide-column-menu-items-sort-descending
+        hide-column-menu-items-sort-ascending
+        hide-header
+        hide-layer-dropdown-icons
+        hide-menu
+        hide-menu-items-clear-selection
+        hide-menu-items-delete-selection
+        hide-menu-items-export-selection-to-csv
+        hide-selection-column
+        hide-tooltips
+      ></arcgis-feature-table>
+    </calcite-dialog>
+
+    <calcite-sheet
+      slot="sheets"
+      id="overview-sheet"
+      label="App Overview"
+      display-mode="overlay"
+    >
+      <calcite-panel
+        heading="App Overview"
+        description="Explore helicopter flight activity and noise complaints with
+          day filtering, flight drill-down, and demographic proximity metrics."
+      >
+        <p><strong>Feature summary</strong></p>
+        <ul>
+          <li>
+            <strong>Demographics mode:</strong> Enable the Demographics chip and
+            move the pointer on the map to compute 0.5-mile proximity totals for
+            population, income, and complaints.
+          </li>
+          <li>
+            <strong>Complaints controls:</strong> The Complaints chip toggles
+            complaint points on the map. The table action opens complaint
+            records constrained by active filters and map extent.
+          </li>
+          <li>
+            <strong>Day filtering:</strong> Click a cell in Flights by Day to
+            filter tracks, complaints, and side-panel analytics to a single
+            date.
+          </li>
+          <li>
+            <strong>Aircraft browser:</strong> Review ranked aircraft IDs for
+            the active date.
+          </li>
+          <li>
+            <strong>Flight detail chart:</strong> Select an aircraft ID to open
+            a time-based chart and highlight related tracks and nearby
+            complaints.
+          </li>
+        </ul>
+      </calcite-panel>
+    </calcite-sheet>
+  </body>
+</html>
