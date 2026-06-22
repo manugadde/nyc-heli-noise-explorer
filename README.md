@@ -4,14 +4,19 @@ Showcase application for the [ArcGIS Maps SDK for JavaScript](https://js.arcgis.
 
 ## Prerequisites
 
-- Python 3.x or another local static file server
+- Node.js 18+ (for npx)
 - A modern desktop browser
 
 ## Development
 
 1. Start a local development server.
    ```bash
-   python3 -m http.server 8080
+   npx serve . -l 8080
+   ```
+
+   Alternative:
+   ```bash
+   npx http-server -p 8080
    ```
 
 2. Open the application in your browser.
