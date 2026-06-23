@@ -4,7 +4,7 @@ Showcase application for the [ArcGIS Maps SDK for JavaScript](https://js.arcgis.
 
 ## Prerequisites
 
-- Node.js 18+ (for npx)
+- Node.js 19+ (for npx)
 - A modern desktop browser
 
 ## Development
